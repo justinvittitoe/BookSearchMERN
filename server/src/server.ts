@@ -1,5 +1,7 @@
 import express from 'express';
 import db from './config/connection.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 //import the apolloSever class
 import { ApolloServer } from '@apollo/server';
@@ -8,6 +10,9 @@ import { expressMiddleware } from '@apollo/server/express4';
 //import the two parts of a GraphQL schema
 import { typeDefs, resolvers } from './schemas/index.js';
 import { getUserFromToken } from './services/auth.js'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const server = new ApolloServer({
   typeDefs,
@@ -29,6 +34,12 @@ const startApolloServer = async () => {
       user: getUserFromToken(req),
     }),
   }))
+
+  app.use(express.static(path.join(__dirname, '..', '..', 'client', 'dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', '..', 'client', 'dist', 'index.html'));
+  });
 
   app.listen(PORT, () => {
     console.log(`🌍 Now listening on localhost:${PORT}`)
