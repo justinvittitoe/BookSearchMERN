@@ -21,9 +21,6 @@ interface Auth {
     user: UserType
 }
 
-interface Context {
-    user?: UserType;
-}
 
 
 const resolvers = {
